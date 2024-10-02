@@ -1,0 +1,21 @@
+server:
+  port: 8090
+
+logging:
+  level:
+    root: INFO
+    org.springframework.web: INFO
+    org.springframework.security: INFO
+    org.springframework.security.oauth2: INFO
+
+
+#  Next, it’s time for the security configuration.
+#  We need to set up the proper URL for our authentication server
+#  with the host and the port we’ve configured in the ProviderSettings bean earlier:
+
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://auth-server:9000

@@ -1,0 +1,47 @@
+server:
+  port: 9000
+
+logging:
+  level:
+    root: INFO
+    org.springframework.web: INFO
+    org.springframework.security: INFO
+    org.springframework.security.oauth2: INFO
+
+
+spring:
+  security:
+    oauth2:
+      authorizationserver:
+        # Next, since each authorization server needs to have a unique issuer URL,
+        # we’ll set ours up with a localhost alias of http://auth-server on port 9000 by setting the spring.security.oauth2.authorizationserver.issuer property:
+        issuer: http://auth-server:9000
+        client:
+         # In addition, we’ll add an entry “127.0.0.1 auth-server” in our /etc/hosts file.
+         # This allows us to run the client and the auth server on our local machine and avoids problems with session cookie overwrites between the two.
+         # Finally, we’ll configure the repository of client services. In our example, we’ll have a single client named articles-client:
+          articles-client:
+            registration:
+              client-id: articles-client
+              client-secret: "{noop}secret"
+              client-name: Articles Client
+              client-authentication-methods:
+                - client_secret_basic
+              authorization-grant-types:
+                - authorization_code
+                - refresh_token
+              redirect-uris:
+                - http://127.0.0.1:8080/login/oauth2/code/articles-client-oidc
+                - http://127.0.0.1:8080/authorized
+              scopes:
+                - openid
+                - articles.read
+
+# The properties we’re configuring are:
+
+#  Client ID – Spring will use it to identify which client is trying to access the resource
+#  Client secret code – a secret known to the client and server that provides trust between the two
+#  Authentication method – in our case, we’ll use basic authentication, which is just a username and password
+#  Authorization grant type – we want to allow the client to generate both an authorization code and a refresh token
+#  Redirect URI – the client will use it in a redirect-based flow
+#  Scope – this parameter defines authorizations that the client may have. In our case, we’ll have the required OidcScopes.OPENID and our custom one, articles. read
